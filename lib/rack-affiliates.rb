@@ -30,7 +30,8 @@ module Rack
         tag, from, time, extras = cookie_info(req)
       end
 
-      if params_tag && params_tag != cookie_tag
+      # update everytime params_tag is present, becuase subid may be different
+      if params_tag
         if tag
           if @allow_overwrite
             tag, from, time, extras = params_info(req)
@@ -49,7 +50,9 @@ module Rack
 
       status, headers, body = @app.call(env)
 
-      if tag != cookie_tag
+      # update cookie everytime params_tag is present, becuase subid may be different
+      # and we want to update expire time
+      if params_tag
         bake_cookies(headers, tag, from, time, extras)
       end
 
